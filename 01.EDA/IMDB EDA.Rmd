@@ -1,0 +1,90 @@
+---
+title: "IMDB EDA"
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+# IMDB (EDA)
+
+## 00. Load Libraries
+
+```{r}
+library(tidyverse)
+```
+
+## 01. Import Data
+
+```{r}
+imdb <- read_csv("IMDB.csv")
+```
+
+## 02. EDA
+
+```{r}
+glimpse(imdb)
+```
+
+```{r}
+summary(imdb)
+```
+
+```{r}
+view(imdb)
+```
+
+## 03. Plotting
+
+```{r}
+ggplot(imdb,aes(budget_x)) +
+  geom_histogram(bins = 50, fill = "skyblue", color = "black") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(data = imdb, aes(x = score)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Score Distribution",
+       x = "Score",
+       y = "Frequeny") +
+  theme_minimal()
+```
+
+```{r}
+imdb %>%
+  count(country, sort = TRUE) %>%
+  top_n(10) %>%
+  ggplot(aes(x = reorder(country, n), y = n)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  coord_flip() +
+  labs(title = "Top 10 Counties",
+       x = "Country",
+       y = "Film") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(data = imdb, aes(x = budget_x, y = revenue)) +
+  geom_point(alpha = 0.5, color = "skyblue") + 
+  scale_x_log10() + 
+  scale_y_log10() +
+  labs(title = "Budget & Revenue",
+       x = "log(Budget)",
+       y = "log(Revenue)") +
+  theme_minimal()
+```
+
+```{r}
+genres_separated <- imdb %>%
+  separate_rows(genre, sep = ",\\s*") # The ",\\s*" separates by comma and any following whitespace
+genres_separated %>%
+  count(genre, sort = TRUE) %>%
+  top_n(15) %>%
+  ggplot(aes(x = reorder(genre, n), y = n)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  coord_flip() +
+  labs(title = "أThe Most Popular Genres") +
+  theme_minimal()
+```
